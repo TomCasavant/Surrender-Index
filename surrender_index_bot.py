@@ -163,7 +163,7 @@ class SurrenderIndexBot:
 
         return False
 
-    def get_now():
+    def get_now(self):
         return datetime.now(tz=tz.gettz())
 
     def update_current_week_games(self):
@@ -307,7 +307,7 @@ class SurrenderIndexBot:
                 main_status = self.mastodon_acc.post(tweet_str)
 
         # Post the status to the 90th percentile account.
-        if current_percentile >= 70. and should_tweet:
+        if current_percentile >= 90. and should_tweet:
             status = self.mastodon_acc_90.boost(main_status['id'])
             if delay_of_game:
                 #print(delay_of_game_str)
