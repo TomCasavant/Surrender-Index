@@ -249,8 +249,8 @@ class SurrenderIndexBot:
         yrdln_str = ' from the ' + territory_str + asterisk + ' on '
         down_str = play['start']['shortDownDistanceText'] + asterisk
         clock_str = ' with ' + play['clock']['displayValue'] + ' remaining in '
-        qtr_str = get_qtr_str(play['period']['number']) + \
-            ' while ' + get_score_str(prev_play, game) + '.'
+        qtr_str = self.get_qtr_str(play['period']['number']) + \
+            ' while ' + self.get_score_str(prev_play, game) + '.'
 
         play_str = decided_str + yrdln_str + down_str + clock_str + qtr_str
 
@@ -304,6 +304,7 @@ class SurrenderIndexBot:
             self.time_print(delay_of_game_str)
 
         main_status = None
+        print(self.should_tweet, self.enable_main_account)
         if self.should_tweet and self.enable_main_account:
             if True:
                 main_status = self.mastodon_acc.post(tweet_str)
@@ -316,7 +317,7 @@ class SurrenderIndexBot:
                 self.mastodon_acc.post(delay_of_game_str, reply_id=main_status['id'])
             if enable_cancel:
                 thread = threading.Thread(target=self.handle_cancel,
-                                        args=(status, tweet_str))
+                                        args=(main_status, tweet_str))
                 thread.start()
 
         self.update_tweeted_plays(drive, game_id)
@@ -373,12 +374,12 @@ class SurrenderIndexBot:
             current_percentile = 100.
 
         all_surrender_indices = np.concatenate(
-            (historical_surrender_indices, current_surrender_indices))
+            (self.historical_surrender_indices, current_surrender_indices))
         historical_percentile = stats.percentileofscore(all_surrender_indices,
                                                         surrender_index,
                                                         kind='strict')
 
-        if self.should_update_file:
+        if should_update_file:
             current_surrender_indices = np.append(current_surrender_indices,
                                                 surrender_index)
             self.write_current_surrender_indices(current_surrender_indices)
@@ -442,7 +443,7 @@ class SurrenderIndexBot:
 
 
     def get_score_str(self, play, game):
-        if self.get_possessing_team(play, game) == get_home_team(game):
+        if self.get_possessing_team(play, game) == self.get_home_team(game):
             return self.pretty_score_str(play['homeScore'], play['awayScore'])
         else:
             return self.pretty_score_str(play['awayScore'], play['homeScore'])
@@ -520,9 +521,9 @@ class SurrenderIndexBot:
 
         self.should_tweet = not args.disableTweeting
         self.should_text = not args.disableNotifications
-        self.enable_main_account = args.enableMainAccount
+        self.enable_main_account = not args.enableMainAccount
         self.reply_using_tweepy = not args.disableTweepyReply
-        self.enable_cancel = args.enableCancel
+        self.enable_cancel = not args.enableCancel
         self.notify_using_twilio = args.notifyUsingTwilio
         self.debug = args.debug
         self.not_headless = args.notHeadless
