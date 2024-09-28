@@ -1,0 +1,8 @@
+services:
+  surrender-index-bot:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
