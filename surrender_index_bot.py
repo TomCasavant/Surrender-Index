@@ -125,7 +125,7 @@ class SurrenderIndexBot:
     def download_data_for_active_games(self):
         active_game_ids = self.get_active_game_ids()
         if len(active_game_ids) == 0:
-            time_print("No games active. Sleeping for 15 minutes...")
+            self.time_print("No games active. Sleeping for 15 minutes...")
             time.sleep(14 * 60)  # We sleep for another minute in the live callback
 
         for game in active_game_ids:
@@ -353,7 +353,8 @@ class SurrenderIndexBot:
         try:
             with open('current_surrender_indices.npy', 'rb') as f:
                 return np.load(f)
-        except BaseException:
+        except BaseException as e:
+            print(e)
             return np.array([])
 
 
