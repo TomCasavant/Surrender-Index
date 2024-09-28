@@ -1,4 +1,4 @@
-from dateutil import parser
+from dateutil import parser, tz
 from datetime import timezone, timedelta, datetime
 import pytz 
 
@@ -10,11 +10,7 @@ class NFLGame:
         self.event_info = event_info
 
     def get_now(self):
-        # TODO: DISABLE, TEST FUNCTION ONLY
-        # Set the desired time for testing: Thursday, September 26th, 2024 at 9 PM EST
-        est = pytz.timezone('US/Eastern')
-        test_time = datetime(2024, 9, 26, 21, 0, 0)  # 9 PM on September 26, 2024
-        return est.localize(test_time)  # Localize to Eastern Time
+        return datetime.now(tz=tz.gettz())
 
     @property
     def id(self): 

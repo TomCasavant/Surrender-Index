@@ -147,7 +147,7 @@ class SurrenderIndexBot:
             self.cancel_punt(orig_status, full_text)
 
     def check_reply(self, poll_status):
-        time.sleep(5 * 60)  # Wait one hour and one minute to check reply
+        time.sleep(61 * 60)  # Wait one hour and one minute to check reply
         poll_results = self.mastodon_acc_90.get_poll_result(poll_status['id'])
 
         total_votes = sum(option['votes_count'] for option in poll_results)
@@ -163,11 +163,8 @@ class SurrenderIndexBot:
 
         return False
 
-    def get_now(self):
-        # Set the desired time for testing: Thursday, September 26th, 2024 at 9 PM EST
-        est = pytz.timezone('US/Eastern')
-        test_time = datetime(2024, 9, 26, 21, 0, 0)  # 9 PM on September 26, 2024
-        return est.localize(test_time)  # Localize to Eastern Time
+    def get_now():
+        return datetime.now(tz=tz.gettz())
 
     def update_current_week_games(self):
         self.current_week_games = []
