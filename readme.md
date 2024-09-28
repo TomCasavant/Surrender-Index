@@ -1,5 +1,13 @@
 # Surrender Index 
+- This project ports the original Twitter-based Surrender Index bot into a Mastodon bot
+- [@surrender_index@tomkahe.com](https://tomkahe.com/@surrender_index)
+- [@surrender_idx90@tomkahe.com](https://tomkahe.com/@surrender_idx90)
 
+
+
+
+---
+# Original README
 ### Andrew Shackelford 
 ### andrewshackelford97@gmail.com
 
