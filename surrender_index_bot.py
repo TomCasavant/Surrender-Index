@@ -258,6 +258,7 @@ class SurrenderIndexBot:
         ) + ' percentile of cowardly punts of the 2024 season, and the ' + self.get_num_str(
             historical_percentile) + ' percentile of all punts since 1999.'
 
+
         return play_str + '\n\n' + surrender_str
     
     def tweet_play(self, play, prev_play, drive, game, game_id):
@@ -272,7 +273,7 @@ class SurrenderIndexBot:
             surrender_index = SurrenderIndex.calc_surrender_index(
                 updated_play, prev_play, drive, game)
 
-            current_percentile, historical_percentile = calculate_percentiles(
+            current_percentile, historical_percentile = self.calculate_percentiles(
                 surrender_index)
 
             unadjusted_surrender_index = SurrenderIndex.calc_surrender_index(
@@ -308,6 +309,7 @@ class SurrenderIndexBot:
 
         # Post the status to the 90th percentile account.
         if current_percentile >= 90. and should_tweet:
+            time.sleep(30) # Attempt to sleep for 30 seconds to fix bluesky bridge issues
             status = self.mastodon_acc_90.boost(main_status['id'])
             if delay_of_game:
                 #print(delay_of_game_str)
@@ -447,7 +449,7 @@ class SurrenderIndexBot:
 
     def is_delay_of_game(self, play, prev_play):
         return 'delay of game' in prev_play['text'].lower(
-        ) and self.get_dist_num(play) - self.get_dist_num(prev_play) > 0
+        ) and SurrenderIndex.get_dist_num(play) - SurrenderIndex.get_dist_num(prev_play) > 0
 
 
     def live_callback(self):

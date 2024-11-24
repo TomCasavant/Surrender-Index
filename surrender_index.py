@@ -1,8 +1,45 @@
+def time_print(message):
+    print(message)
+
+# Dictionary of teams (reversed for easier lookup by ID)
+teams = { 
+    '22': 'ARI', '1': 'ATL', '33': 'BAL', '2': 'BUF', '29': 'CAR',
+    '3': 'CHI', '4': 'CIN', '5': 'CLE', '6': 'DAL', '7': 'DEN',
+    '8': 'DET', '9': 'GB', '34': 'HOU', '11': 'IND', '30': 'JAX',
+    '12': 'KC', '13': 'LV', '24': 'LAC', '14': 'LAR', '15': 'MIA',
+    '16': 'MIN', '17': 'NE', '18': 'NO', '19': 'NYG', '20': 'NYJ',
+    '21': 'PHI', '23': 'PIT', '25': 'SF', '26': 'SEA', '27': 'TB',
+    '10': 'TEN', '28': 'WSH'
+}
+
 class SurrenderIndex:
 
     @staticmethod
     def is_in_opposing_territory(play):
+        team_id = str(play['start']['team']['id'])
+        
+        team_abbreviation = teams.get(team_id) # -> MIA
+        
+        possession_text = play['start']['possessionText'] # e.g. MIA 34
+        
+        if team_abbreviation and team_abbreviation in possession_text:
+            # Team is on their own side
+            return False
+        else:
+            # Team is on the opposing side
+            return True
+
+    @staticmethod
+    def is_in_opposing_territory_original(play):
+        print(play['start'])
+        print(play['start']['yardsToEndzone'])
         return play['start']['yardsToEndzone'] < 50
+
+    def get_debug_str(play):
+        opposing = "In Opponents Territory: " + str(SurrenderIndex.is_in_opposing_territory(play))
+        yards = "Yards to Endzone: " + str(play['start']['yardsToEndzone'])
+        yardline = "Current Yardline: " + str(play['start']['yardLine'])
+        return "\nDebug:\n" + opposing + "\n" + yards + "\n" + yardline
     
     @staticmethod
     def get_yrdln_int(play):
@@ -43,6 +80,8 @@ class SurrenderIndex:
     @staticmethod
     def calc_field_pos_score(play):
         try:
+            print("IS IN OPPOSING TERRITORY?")
+            time_print(SurrenderIndex.is_in_opposing_territory(play))
             if play['start']['yardLine'] == 50:
                 return (1.1)**10.
             if not SurrenderIndex.is_in_opposing_territory(play):
@@ -100,7 +139,7 @@ class SurrenderIndex:
         return play['clock']['displayValue']
     
     @staticmethod
-    def calc_seconds_since_halftime(play, game, debug=False):
+    def calc_seconds_since_halftime(play, game, debug=True):
         # Regular season games have only one overtime of length 10 minutes
         if not game.is_postseason and SurrenderIndex.get_qtr_num(play) == 5:
             seconds_elapsed_in_qtr = (10 * 60) - SurrenderIndex.calc_seconds_from_time_str(
@@ -115,7 +154,7 @@ class SurrenderIndex:
         return seconds_since_halftime
 
     @classmethod
-    def calc_surrender_index(self, play, prev_play, drive, game, debug=False):
+    def calc_surrender_index(self, play, prev_play, drive, game, debug=True):
         field_pos_score = SurrenderIndex.calc_field_pos_score(play)
         yds_to_go_mult = SurrenderIndex.calc_yds_to_go_multiplier(play)
         score_mult = SurrenderIndex.calc_score_multiplier(prev_play, drive, game)
